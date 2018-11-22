@@ -43,7 +43,7 @@ Ignitor.exec(_SERVICE_IGNITE_STATUS_, _SERVICE_NODEJS_SITE_).then(() => {
     });
 
     const vd = '/';
-    const port = process.env.PORT || 8080;
+    const port = process.env.PORT || 9001;
 
     const app = new Koa();
 
