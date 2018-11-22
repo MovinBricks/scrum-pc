@@ -70,7 +70,6 @@ export default {
     },
     computed: {
         totalPoints() {
-            let a = 0;
             let _result = 0;
             if (this.selectValues.includes("unknown")) {
                 _result = "unknown";
