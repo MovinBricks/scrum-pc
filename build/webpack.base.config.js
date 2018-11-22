@@ -3,7 +3,6 @@ const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
-var echartsName = require('echarts/lib/echarts');
 
 
 const { VueLoaderPlugin } = require('vue-loader');

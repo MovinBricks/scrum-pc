@@ -4,11 +4,11 @@
             <div class='points-view'>
                 <span class='points-text'>评分：<span class='points-total'>{{totalPoints}}</span></span>
             </div>
-            <button class='quit-btn' @click="webSocket">提交</button>
+            <button class='quit-btn' @click="sendPoint">提交</button>
         </div>
         <div class='card-list'>
             <div v-for="item in cards" class='card' v-bind:style="{backgroundColor:item.bgColor}" :key="item.value" @click='selectCard(item.value)'>
-                <div class='selected-card' v-show="{hasChoose}">
+                <div class='selected-card' v-if="hasChoose(item.value)">
                     <font-icon id="icon-wenhao" class="selected-card-icon"></font-icon>
                 </div>
                 <font-icon :id='"icon-"+item.name' class="cardText"></font-icon>
@@ -79,13 +79,27 @@ export default {
                 );
             }
             return _result;
-        },
-        hasChoose(value) {
-            return this.selectValues.includes(value);
         }
+    },
+    mounted() {
+        this.websock = new WebSocket("ws://127.0.0.1:5387");
+
+        this.websock.onopen = function() {
+            console.log("onopen...");
+        };
+        this.websock.onmessage = function(evt) {
+            var received_msg = evt.data;
+            console.log("onmessage...", received_msg);
+        };
+
+        this.websock.onclose = function() {
+            // 关闭 websocket
+            console.log("onclose...");
+        };
     },
     methods: {
         selectCard(value) {
+            console.log(this.selectValues, value);
             if (this.selectValues.includes(value)) {
                 this.selectValues.splice(
                     this.selectValues.findIndex(v => v === value),
@@ -95,35 +109,11 @@ export default {
                 this.selectValues.push(value);
             }
         },
-        webSocket() {
-            this.$socket.emit("add", { a: 5, b: 3 });
-        }
-    },
-    socket: {
-        // Prefix for event names
-        // prefix: "/counter/",
-        // If you set `namespace`, it will create a new socket connection to the namespace instead of `/`
-        // namespace: "/counter",
-        events: {
-            // Similar as this.$socket.on("changed", (msg) => { ... });
-            // If you set `prefix` to `/counter/`, the event name will be `/counter/changed`
-            //
-            changed(msg) {
-                console.log("Something changed: " + msg);
-            },
-
-            //common socket.io events
-            connect() {
-                console.log("Websocket connected to " + this.$socket.nsp);
-            },
-
-            disconnect() {
-                console.log("Websocket disconnected from " + this.$socket.nsp);
-            },
-
-            error(err) {
-                console.error("Websocket error!", err);
-            }
+        hasChoose(value) {
+            return this.selectValues.includes(value);
+        },
+        sendPoint() {
+            this.websock.send(JSON.stringify({ a: 1 }));
         }
     }
 };

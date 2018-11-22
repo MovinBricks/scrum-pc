@@ -5,7 +5,7 @@
         <header class="header">
             <div class="headerContent">
                 <h1 class="title">
-                    敏捷拓展集
+                    敏捷拓展集 <span style="padding-left:10px;">ID：{{roomid}}</span>
                 </h1>
                 <nav class="nav">
                     <a href="#" class="nav_item">Show Points</a>
@@ -36,7 +36,7 @@
 </template>
 
 <script>
-const echarts = require("echarts");
+const echarts = require("../utils/echarts.min.js");
 const userData = [
     {
         id: 1,
@@ -93,125 +93,177 @@ const userData = [
         photo: "https://pages.c-ctrip.com/hotel_h5/agility/photo_4.jpg"
     }
 ];
+function GetRequest() {
+    let url = location.search; //获取url中"?"符后的字串
+    let theRequest = new Object();
+    if (url.indexOf("?") != -1) {
+        let str = url.substr(1);
+        let strs = str.split("&");
+        for (let i = 0; i < strs.length; i++) {
+            theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+        }
+    }
+    return theRequest;
+}
+
 export default {
     data() {
         return {
-            userData: userData
+            userData: userData,
+            roomid: 0
         };
     },
+
     mounted() {
-        // 基于准备好的dom，初始化echarts实例
-        const myChart = echarts.init(
-            document.getElementById("echartContainer")
-        );
-
-        let yMax = 0;
-        let suggest = 5;
-
-        const names = userData.map(d => d.name);
-        const values = userData.map(d => d.value);
-        for (var i = 0; i < values.length; i++) {
-            if (yMax < values[i]) {
-                yMax = values[i];
-            }
-        }
-        const dataShadow = userData.map(d => yMax);
-
-        const option = {
-            title: {
-                show: false
-            },
-            xAxis: {
-                type: "category",
-                data: values,
-                axisLabel: {
-                    inside: true,
-                    textStyle: {
-                        color: "#fff",
-                        fontSize: 20,
-                        fontWeight: "400"
-                    }
-                },
-                axisTick: {
-                    show: false
-                },
-                axisLine: {
-                    show: false
-                },
-                z: 10
-            },
-            yAxis: {
-                type: "value",
-                axisLine: {
-                    show: false
-                },
-                axisTick: {
-                    show: false
-                },
-                axisLabel: {
-                    textStyle: {
-                        color: "#333",
-                        fontSize: 14
-                    }
+        this.openWebsock();
+        this.createEcharts();
+    },
+    methods: {
+        openWebsock() {
+            this.websock = new WebSocket("ws://127.0.0.1:5387");
+            const Request = GetRequest();
+            this.websock.onopen = () => {
+                if (Request.roomid) {
+                    this.roomid = Request.roomid;
+                } else {
+                    this.websock.send(JSON.stringify({ type: "CREATE" }));
                 }
-            },
-            series: [
-                {
-                    // For shadow
-                    type: "bar",
-                    itemStyle: {
-                        normal: { color: "rgba(0,0,0,0.05)" }
-                    },
-                    barGap: "-100%",
-                    barCategoryGap: "40%",
-                    data: dataShadow,
-                    animation: false
-                },
-                {
-                    data: values,
-                    type: "bar",
-                    markLine: {
-                        data: [
-                            {
-                                name: "推荐值",
-                                yAxis: suggest
-                            }
-                        ]
-                    },
-                    itemStyle: {
-                        normal: {
-                            color: new echarts.graphic.LinearGradient(
-                                0,
-                                0,
-                                0,
-                                1,
-                                [
-                                    { offset: 0, color: "#83bff6" },
-                                    { offset: 0.5, color: "#188df0" },
-                                    { offset: 1, color: "#188df0" }
-                                ]
-                            )
+
+                console.log("onopen...");
+            };
+            this.websock.onmessage = evt => {
+                var received_msg = JSON.parse(evt.data);
+
+                if (received_msg.type === "CREATE_SUCCESS") {
+                    this.roomid = received_msg.roomID;
+                    window.history.replaceState(
+                        {
+                            roomid: this.roomid
                         },
-                        emphasis: {
-                            color: new echarts.graphic.LinearGradient(
-                                0,
-                                0,
-                                0,
-                                1,
-                                [
-                                    { offset: 0, color: "#2378f7" },
-                                    { offset: 0.7, color: "#2378f7" },
-                                    { offset: 1, color: "#83bff6" }
-                                ]
-                            )
+                        "",
+                        `?roomid=${this.roomid}`
+                    );
+                }
+                console.log("onmessage...", received_msg);
+            };
+
+            this.websock.onclose = () => {
+                console.log("onclose...");
+            };
+        },
+        createEcharts() {
+            const myChart = echarts.init(
+                document.getElementById("echartContainer")
+            );
+
+            let yMax = 0;
+            let suggest = 5;
+
+            const names = userData.map(d => d.name);
+            const values = userData.map(d => d.value);
+            for (var i = 0; i < values.length; i++) {
+                if (yMax < values[i]) {
+                    yMax = values[i];
+                }
+            }
+            const dataShadow = userData.map(d => yMax);
+
+            const option = {
+                title: {
+                    show: false
+                },
+                xAxis: {
+                    type: "category",
+                    data: values,
+                    axisLabel: {
+                        inside: true,
+                        textStyle: {
+                            color: "#fff",
+                            fontSize: 20,
+                            fontWeight: "400"
+                        }
+                    },
+                    axisTick: {
+                        show: false
+                    },
+                    axisLine: {
+                        show: false
+                    },
+                    z: 10
+                },
+                yAxis: {
+                    type: "value",
+                    axisLine: {
+                        show: false
+                    },
+                    axisTick: {
+                        show: false
+                    },
+                    axisLabel: {
+                        textStyle: {
+                            color: "#333",
+                            fontSize: 14
                         }
                     }
-                }
-            ]
-        };
+                },
+                series: [
+                    {
+                        // For shadow
+                        type: "bar",
+                        itemStyle: {
+                            normal: { color: "rgba(0,0,0,0.05)" }
+                        },
+                        barGap: "-100%",
+                        barCategoryGap: "40%",
+                        data: dataShadow,
+                        animation: false
+                    },
+                    {
+                        data: values,
+                        type: "bar",
+                        markLine: {
+                            data: [
+                                {
+                                    name: "推荐值",
+                                    yAxis: suggest
+                                }
+                            ]
+                        },
+                        itemStyle: {
+                            normal: {
+                                color: new echarts.graphic.LinearGradient(
+                                    0,
+                                    0,
+                                    0,
+                                    1,
+                                    [
+                                        { offset: 0, color: "#83bff6" },
+                                        { offset: 0.5, color: "#188df0" },
+                                        { offset: 1, color: "#188df0" }
+                                    ]
+                                )
+                            },
+                            emphasis: {
+                                color: new echarts.graphic.LinearGradient(
+                                    0,
+                                    0,
+                                    0,
+                                    1,
+                                    [
+                                        { offset: 0, color: "#2378f7" },
+                                        { offset: 0.7, color: "#2378f7" },
+                                        { offset: 1, color: "#83bff6" }
+                                    ]
+                                )
+                            }
+                        }
+                    }
+                ]
+            };
 
-        // 绘制图表
-        myChart.setOption(option);
+            // 绘制图表
+            myChart.setOption(option);
+        }
     }
 };
 </script>
