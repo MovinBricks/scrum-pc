@@ -1,4 +1,4 @@
-# soa-hotel-service
+# scrum-pc
 
 ## 项目结构
 ```
