@@ -15,5 +15,8 @@ coverage/
 # IDEA
 .idea/
 
-#npm
+# npm
 package-lock.json
+
+# dist
+dist

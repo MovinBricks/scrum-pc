@@ -4,12 +4,6 @@ const autoprefixer = require('autoprefixer');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
 var echartsName = require('echarts/lib/echarts');
-// 引入k线图
-require('echarts/lib/chart/candlestick');
-// 引入提示框和标题组件
-require('echarts/lib/component/tooltip');
-require('echarts/lib/component/title');
-require("echarts/lib/component/legend") //官网没有加这句话，导致报错
 
 
 const { VueLoaderPlugin } = require('vue-loader');
