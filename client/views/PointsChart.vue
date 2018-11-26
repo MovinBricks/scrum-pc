@@ -21,11 +21,19 @@
             <div class="userBox">
                 <div class="userItem" v-for="item in userData" :key="item.id">
                     <div class="userPhoto">
+                        <div class="blackShade" v-show="!item.isDone">
+
+                            <img src="../utils/svg-loaders/rings.svg" class="loading-svg" alt="">
+                        </div>
+
                         <img class="userPhotoImg" :src="item.photo" alt="">
+
                     </div>
+                    <font-icon v-show="item.isDone" id="icon-gouxuan" class="userDoneGou"></font-icon>
                     <div class="userItemName">
                         <span class="userItemNameText">{{item.name}}</span>
                     </div>
+
                 </div>
             </div>
             <div class="placeholder">
@@ -41,6 +49,7 @@ const userData = [
     {
         id: 1,
         value: 5,
+        isDone: true,
         name: "啸啸啸",
         photo: "https://pages.c-ctrip.com/hotel_h5/agility/photo_1.jpg"
     },
@@ -48,6 +57,7 @@ const userData = [
         id: 2,
         value: 5,
         name: "天马",
+        isDone: true,
         photo: "https://pages.c-ctrip.com/hotel_h5/agility/photo_2.jpg"
     },
     {
@@ -120,7 +130,7 @@ export default {
     },
     methods: {
         openWebsock() {
-            this.websock = new WebSocket("ws://127.0.0.1:5387");
+            this.websock = new WebSocket("ws://127.0.0.1:9000");
             const Request = GetRequest();
             this.websock.onopen = () => {
                 if (Request.roomid) {
@@ -134,7 +144,10 @@ export default {
             this.websock.onmessage = evt => {
                 var received_msg = JSON.parse(evt.data);
 
-                if (received_msg.type === "CREATE_SUCCESS") {
+                if (
+                    received_msg.type === "CREATE" &&
+                    received_msg.status === "SUCCESS"
+                ) {
                     this.roomid = received_msg.roomID;
                     window.history.replaceState(
                         {
@@ -143,6 +156,12 @@ export default {
                         "",
                         `?roomid=${this.roomid}`
                     );
+                }
+
+                if (received_msg.type === "JOIN_USER") {
+                    //this.userData.push(received_msg.userInfo);
+                }
+                if (received_msg.type === "JOIN_USER") {
                 }
                 console.log("onmessage...", received_msg);
             };
@@ -379,6 +398,17 @@ export default {
 .userItem {
     flex: 1;
     margin: 0 0.5rem;
+    position: relative;
+}
+.blackShade {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    background-color: rgba($color: #000000, $alpha: 0.6);
+}
+.loading-svg {
+    width: 100%;
 }
 .userPhoto {
     border-radius: 50%;
@@ -386,9 +416,11 @@ export default {
     margin: 0 auto;
     border: 3px solid #ccdeed;
     max-width: 50px;
+    position: relative;
 }
 .userPhotoImg {
     width: 100%;
+
     display: block;
 }
 .userItemName {
@@ -400,5 +432,12 @@ export default {
     font-size: 14px;
     font-weight: "600";
     color: #ffffff;
+}
+.userDoneGou {
+    font-size: 20px;
+    position: absolute;
+    right: 0px;
+    bottom: 2px;
+    color: #4b88e5;
 }
 </style>
