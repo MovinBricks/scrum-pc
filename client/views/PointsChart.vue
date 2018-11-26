@@ -21,15 +21,18 @@
             <div class="userBox">
                 <div class="userItem" v-for="item in userData" :key="item.id">
                     <div class="userPhoto">
-                        <div class="blackShade" v-show="!item.isDone">
 
-                            <img src="../utils/svg-loaders/rings.svg" class="loading-svg" alt="">
+                        <div class="userPhotoImgWrap">
+                            <div class="blackShade" v-show="!item.isDone">
+
+                                <img src="../utils/svg-loaders/rings.svg" class="loading-svg" alt="">
+                            </div>
+                            <img class="userPhotoImg" :src="item.photo" alt="">
                         </div>
-
-                        <img class="userPhotoImg" :src="item.photo" alt="">
+                        <font-icon v-show="item.isDone" id="icon-gouxuan" class="userDoneGou"></font-icon>
 
                     </div>
-                    <font-icon v-show="item.isDone" id="icon-gouxuan" class="userDoneGou"></font-icon>
+
                     <div class="userItemName">
                         <span class="userItemNameText">{{item.name}}</span>
                     </div>
@@ -411,12 +414,15 @@ export default {
     width: 100%;
 }
 .userPhoto {
+    margin: 0 auto;
+    position: relative;
+    max-width: 50px;
+}
+.userPhotoImgWrap {
+    position: relative;
+    border: 3px solid #ccdeed;
     border-radius: 50%;
     overflow: hidden;
-    margin: 0 auto;
-    border: 3px solid #ccdeed;
-    max-width: 50px;
-    position: relative;
 }
 .userPhotoImg {
     width: 100%;
@@ -436,8 +442,9 @@ export default {
 .userDoneGou {
     font-size: 20px;
     position: absolute;
+    z-index: 2;
     right: 0px;
-    bottom: 2px;
+    bottom: -5px;
     color: #4b88e5;
 }
 </style>
