@@ -4,7 +4,6 @@ const helmet = require('koa-helmet');
 const path = require('path');
 const bodyParser = require('koa-bodyparser');
 const LRU = require('lru-cache');
-const favicon = require('koa-favicon');
 const staticServer = require('koa-static-plus');
 const { createBundleRenderer } = require('vue-server-renderer');
 
@@ -74,8 +73,6 @@ Ignitor.exec(_SERVICE_IGNITE_STATUS_, _SERVICE_NODEJS_SITE_).then(() => {
 
     const staticPath = resolve('../dist'); // 静态资源路径
     const staticOutputPath = '/dist'; // 静态资源输出路径
-
-    app.use(favicon(__dirname + '/public/favicon.ico'));
 
     // 加载静态资源
     app.use(staticServer(staticPath, { pathPrefix: staticOutputPath }));
