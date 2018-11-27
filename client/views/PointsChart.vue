@@ -79,7 +79,10 @@
         </div>
       </div>
       <div class="placeholder">
-        <div class="loadingBox">
+        <div
+          v-show="isShowLoading"
+          class="loadingBox"
+        >
           <div class="thing"></div>
           <div class="thing"></div>
           <div class="thing"></div>
@@ -92,7 +95,8 @@
 </template>
 
 <script>
-const echarts = require("../utils/echarts.min.js");
+const echarts = require("echarts/lib/echarts");
+require("echarts/lib/chart/bar");
 const { serverHost } = require("../common/config.js");
 /* const userData = [
     {
@@ -171,6 +175,7 @@ export default {
       userData: [],
       roomid: 0,
       average: 0,
+      isShowLoading: true,
       myChart: null
     };
   },
@@ -220,17 +225,21 @@ export default {
           received_msg.type === "RESTART" &&
           received_msg.status === "SUCCESS"
         ) {
+          this.isShowLoading = true;
           this.userData = received_msg.users;
           this.myChart.clear();
         }
 
-        if (
-          ["KICK", "SHOW"].includes(received_msg.type) &&
-          received_msg.status === "SUCCESS"
-        ) {
+        if (received_msg.type === "KICK" && received_msg.status === "SUCCESS") {
           if (received_msg.average) {
             this.average = received_msg.average;
           }
+          this.isShowLoading = true;
+          this.createEcharts();
+        }
+
+        if (received_msg.type === "SHOW" && received_msg.status === "SUCCESS") {
+          this.isShowLoading = false;
           this.createEcharts();
         }
 
