@@ -29,88 +29,33 @@
                         </div>
                         <font-icon v-show="!!item.score" id="icon-gouxuan" class="userDoneGou"></font-icon>
                     </div>
-
+    
                     <div class="userItemName">
                         <span class="userItemNameText">{{item.userInfo.nickName}}</span>
                     </div>
                 </div>
             </div>
             <div class="placeholder">
-                <div v-show="isShowLoading" class="loadingBox">
-                    <div class="thing"></div>
-                    <div class="thing"></div>
-                    <div class="thing"></div>
-                    <div class="thing"></div>
-                </div>
+                <!-- <div v-show="isShowLoading" class="loadingBox">
+                        <div class="thing"></div>
+                        <div class="thing"></div>
+                        <div class="thing"></div>
+                        <div class="thing"></div>
+                    </div> -->
+                <Loading v-show="isShowLoading" class="loading-box" />
             </div>
         </div>
     </div>
 </template>
 
 <script>
+    import Loading from "./Loading.vue";
     const echarts = require("echarts/lib/echarts");
     require("echarts/lib/chart/bar");
     const {
         serverHost
     } = require("../common/config.js");
-    /* const userData = [
-                        {
-                            id: 1,
-                            value: 5,
-                            isDone: true,
-                            name: "啸啸啸",
-                            photo: "https://pages.c-ctrip.com/hotel_h5/agility/photo_1.jpg"
-                        },
-                        {
-                            id: 2,
-                            value: 5,
-                            name: "天马",
-                            isDone: true,
-                            photo: "https://pages.c-ctrip.com/hotel_h5/agility/photo_2.jpg"
-                        },
-                        {
-                            id: 3,
-                            value: 2,
-                            name: "陶波",
-                            photo: "https://pages.c-ctrip.com/hotel_h5/agility/photo_3.jpg"
-                        },
-                        {
-                            id: 4,
-                            value: 3,
-                            name: "海岸",
-                            photo: "https://pages.c-ctrip.com/hotel_h5/agility/photo_4.jpg"
-                        },
-                        {
-                            id: 5,
-                            value: 8,
-                            name: "孝义",
-                            photo: "https://pages.c-ctrip.com/hotel_h5/agility/photo_5.jpg"
-                        },
-                        {
-                            id: 6,
-                            value: 5,
-                            name: "啸啸",
-                            photo: "https://pages.c-ctrip.com/hotel_h5/agility/photo_1.jpg"
-                        },
-                        {
-                            id: 7,
-                            value: 5,
-                            name: "天马",
-                            photo: "https://pages.c-ctrip.com/hotel_h5/agility/photo_2.jpg"
-                        },
-                        {
-                            id: 8,
-                            value: 2,
-                            name: "陶波",
-                            photo: "https://pages.c-ctrip.com/hotel_h5/agility/photo_3.jpg"
-                        },
-                        {
-                            id: 9,
-                            value: 3,
-                            name: "海岸",
-                            photo: "https://pages.c-ctrip.com/hotel_h5/agility/photo_4.jpg"
-                        }
-                    ]; */
+    
     function GetRequest() {
         let url = location.search; //获取url中"?"符后的字串
         let theRequest = new Object();
@@ -123,7 +68,7 @@
         }
         return theRequest;
     }
-
+    
     export default {
         data() {
             return {
@@ -134,10 +79,13 @@
                 myChart: null
             };
         },
-
+    
         mounted() {
             this.openWebsock();
             this.myChart = echarts.init(document.getElementById("echartContainer"));
+        },
+        components: {
+            Loading
         },
         methods: {
             openWebsock() {
@@ -152,12 +100,12 @@
                         webObj.roomID = Request.roomid;
                     }
                     this.websock.send(JSON.stringify(webObj));
-
+    
                     console.log("onopen...");
                 };
                 this.websock.onmessage = evt => {
                     var received_msg = JSON.parse(evt.data);
-
+    
                     if (
                         received_msg.type === "CREATE" &&
                         received_msg.status === "SUCCESS"
@@ -171,7 +119,7 @@
                         );
                         this.restartAction();
                     }
-
+    
                     if (
                         ["JOIN_USER", "CREATE", "GRADE", "KICK", "RESTART"].includes(
                             received_msg.type
@@ -179,7 +127,7 @@
                     ) {
                         this.userData = received_msg.users;
                     }
-
+    
                     if (
                         received_msg.type === "RESTART" &&
                         received_msg.status === "SUCCESS"
@@ -188,7 +136,7 @@
                         this.userData = received_msg.users;
                         this.myChart.clear();
                     }
-
+    
                     if (received_msg.type === "KICK" && received_msg.status === "SUCCESS") {
                         if (received_msg.average) {
                             this.average = received_msg.average;
@@ -196,20 +144,20 @@
                         this.isShowLoading = true;
                         this.createEcharts();
                     }
-
+    
                     if (received_msg.type === "SHOW" && received_msg.status === "SUCCESS") {
                         this.isShowLoading = false;
                         this.createEcharts();
                     }
-
+    
                     console.log("onmessage...", received_msg);
                 };
-
+    
                 this.websock.onclose = () => {
                     this.websock = new WebSocket(serverHost);
                 };
             },
-
+    
             restartAction() {
                 this.websock.send(
                     JSON.stringify({
@@ -252,7 +200,7 @@
                     }
                 }
                 const dataShadow = this.userData.map(d => yMax);
-
+    
                 const option = {
                     title: {
                         show: false
@@ -307,14 +255,12 @@
                         {
                             data: values,
                             type: "bar",
-                            markLine: this.average > 0 ?
-                                {
-                                    data: [{
-                                        name: "推荐值",
-                                        yAxis: this.average
-                                    }]
-                                } :
-                                null,
+                            markLine: this.average > 0 ? {
+                                data: [{
+                                    name: "推荐值",
+                                    yAxis: this.average
+                                }]
+                            } : null,
                             itemStyle: {
                                 normal: {
                                     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
@@ -350,7 +296,7 @@
                         }
                     ]
                 };
-
+    
                 // 绘制图表
                 this.myChart.setOption(option);
             }
@@ -366,7 +312,7 @@
         max-width: 100vw;
         box-sizing: border-box;
     }
-
+    
     .main {
         -webkit-box-orient: horizontal;
         -webkit-box-direction: normal;
@@ -378,7 +324,7 @@
         background-color: rgba($color: #5b9ce6, $alpha: 0.6);
         padding-bottom: 30px;
     }
-
+    
     .bg_top {
         transform: skewY(-5deg) translateY(-90%);
         width: 100vw;
@@ -390,7 +336,7 @@
         background: -moz-linear-gradient(90deg, #2196f3, #1e88e5);
         box-sizing: border-box;
     }
-
+    
     .bg_bottom {
         transform: skewY(-5deg) translateY(76%);
         bottom: 0px;
@@ -400,7 +346,7 @@
         position: absolute;
         box-sizing: border-box;
     }
-
+    
     .header {
         background-color: #1e88e5;
         z-index: 900;
@@ -408,7 +354,7 @@
         height: 48px;
         margin-bottom: 10px;
     }
-
+    
     .headerContent {
         max-width: 1040px;
         margin: 0 auto;
@@ -422,18 +368,18 @@
         display: -webkit-flex;
         position: relative;
     }
-
+    
     .title {
         font-weight: 400;
         font-size: 20px;
         padding: 10px 20px;
         margin: 0px;
     }
-
+    
     .nav {
         margin-left: auto;
     }
-
+    
     .nav_item {
         display: inline-block;
         text-align: left;
@@ -448,18 +394,18 @@
         font-weight: 400;
         color: white;
     }
-
+    
     .nav_item:hover {
         background-color: #2c4f94;
     }
-
+    
     .echartContainer {
         width: 1040px;
         height: 500px;
         position: relative;
         z-index: 2;
     }
-
+    
     .userBox {
         width: 840px;
         margin: 0 auto;
@@ -469,13 +415,13 @@
         z-index: 3;
         margin-top: -20px;
     }
-
+    
     .userItem {
         flex: 1;
         margin: 0 0.5rem;
         position: relative;
     }
-
+    
     .blackShade {
         width: 180%;
         height: 180%;
@@ -485,43 +431,43 @@
         border-radius: 50%;
         //background-color: rgba($color: #000000, $alpha: 0.4);
     }
-
+    
     .loading-svg {
         width: 100%;
     }
-
+    
     .userPhoto {
         margin: 0 auto;
         position: relative;
         max-width: 50px;
     }
-
+    
     .userPhotoImgWrap {
         position: relative;
         border: 3px solid #ccdeed;
         border-radius: 50%;
         //overflow: hidden;
     }
-
+    
     .userPhotoImg {
         width: 100%;
         border-radius: 50%;
         position: relative;
         display: block;
     }
-
+    
     .userItemName {
         margin: 0 auto;
         text-align: center;
         padding-top: 5px;
     }
-
+    
     .userItemNameText {
         font-size: 14px;
         font-weight: "600";
         color: #ffffff;
     }
-
+    
     .userDoneGou {
         font-size: 20px;
         position: absolute;
@@ -530,7 +476,7 @@
         bottom: -3px;
         color: #4b88e5;
     }
-
+    
     $size: 50px;
     .placeholder {
         width: 900px;
@@ -541,7 +487,14 @@
         background-color: rgba($color: #fff, $alpha: 0.8);
         z-index: 1;
     }
-
+    
+    .loading-box {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    
     .loadingBox {
         height: #{$size * 2};
         width: #{$size * 2};
@@ -550,7 +503,7 @@
         left: calc(50% - #{$size / 2});
         perspective: 1000px;
     }
-
+    
     .thing {
         height: $size;
         width: $size;
@@ -560,14 +513,14 @@
         top: 0;
         left: 0;
     }
-
+    
     @for $i from 1 through 4 {
         .thing:nth-of-type(#{$i}) {
             animation: bounce 0.5s ease-in-out infinite alternate,
             move 4s #{-$i}s infinite;
         }
     }
-
+    
     @keyframes bounce {
         from {
             transform: scale(1);
@@ -576,7 +529,7 @@
             transform: scale(0.8);
         }
     }
-
+    
     @keyframes move {
         0% {
             top: 0;
