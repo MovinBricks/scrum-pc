@@ -8,9 +8,9 @@
                     敏捷拓展集 <span style="padding-left:10px;">ID：{{roomid}}</span>
                 </h1>
                 <nav class="nav">
-                    <a href="#" class="nav_item">Show Points</a>
-                    <a href="#" class="nav_item">Restart</a>
-                    <a href="#" class="nav_item">Kill All</a>
+                    <a href="#" @click="showPointsAction" class="nav_item">Show Points</a>
+                    <a href="#" @click="restartAction" class="nav_item">Restart</a>
+                    <a href="#" @click="killAllAction" class="nav_item">Kill All</a>
                 </nav>
 
             </div>
@@ -19,22 +19,22 @@
             <!--创建一个echarts的容器-->
             <div id="echartContainer" class="echartContainer"></div>
             <div class="userBox">
-                <div class="userItem" v-for="item in userData" :key="item.uid">
+                <div class="userItem" v-for="item in userData" :key="item.userInfo.uid">
                     <div class="userPhoto">
 
                         <div class="userPhotoImgWrap">
-                            <div class="blackShade" v-show="!item.isDone">
+                            <div class="blackShade" v-show="!item.score">
 
                                 <img src="../utils/svg-loaders/rings.svg" class="loading-svg" alt="">
                             </div>
-                            <img class="userPhotoImg" :src="item.photo" alt="">
+                            <img class="userPhotoImg" :src="item.userInfo.avatarUrl" alt="">
                         </div>
-                        <font-icon v-show="item.isDone" id="icon-gouxuan" class="userDoneGou"></font-icon>
+                        <font-icon v-show="!!item.score" id="icon-gouxuan" class="userDoneGou"></font-icon>
 
                     </div>
 
                     <div class="userItemName">
-                        <span class="userItemNameText">{{item.name}}</span>
+                        <span class="userItemNameText">{{item.userInfo.nickName}}</span>
                     </div>
 
                 </div>
@@ -135,7 +135,6 @@ export default {
 
     mounted() {
         this.openWebsock();
-        this.createEcharts();
     },
     methods: {
         openWebsock() {
@@ -168,14 +167,18 @@ export default {
                 }
 
                 if (received_msg.type === "JOIN_USER") {
-                    this.userData = received_msg.users.map(user => {
-                        return {
-                            name: user.nickName,
-                            photo: user.avatarUrl
-                        };
-                    });
+                    this.userData = received_msg.users;
                 }
-                if (received_msg.type === "JOIN_USER") {
+
+                if (received_msg.type === "GRADE") {
+                    this.userData = received_msg.users;
+                }
+                if (
+                    received_msg.type === "RESTART" &&
+                    received_msg.status === "SUCCESS"
+                ) {
+                    this.userData = received_msg.users;
+                    document.getElementById("echartContainer").innerHTML = "";
                 }
                 console.log("onmessage...", received_msg);
             };
@@ -183,6 +186,14 @@ export default {
             this.websock.onclose = () => {
                 console.log("onclose...");
             };
+        },
+
+        restartAction() {
+            this.websock.send(JSON.stringify({ type: "RESTART" }));
+        },
+        killAllAction() {},
+        showPointsAction() {
+            this.createEcharts();
         },
         createEcharts() {
             const myChart = echarts.init(
@@ -193,8 +204,8 @@ export default {
             let suggest = 5;
 
             console.log(this.userData, "this.userData");
-            const names = this.userData.map(d => d.nickName);
-            const values = this.userData.map(d => d.gender);
+            const names = this.userData.map(d => d.userInfo.nickName);
+            const values = this.userData.map(d => d.score);
             for (var i = 0; i < values.length; i++) {
                 if (yMax < values[i]) {
                     yMax = values[i];
@@ -406,6 +417,8 @@ export default {
     flex: 1;
     margin: 0 0.5rem;
     position: relative;
+}
+.userPhoto:hover {
 }
 .blackShade {
     width: 100%;
