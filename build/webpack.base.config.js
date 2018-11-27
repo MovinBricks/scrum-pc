@@ -72,7 +72,7 @@ module.exports = {
                 loader: 'url-loader?name=icons/[name].[md5:hash:hex:7].[ext]',
             },
             {
-                test: /\.(png|jpg|gif|svg)$/,
+                test: /\.(png|jpg|gif|svg|ico)$/,
                 loader: 'url-loader',
                 exclude: [resolve('../client/icons')],
                 options: {
