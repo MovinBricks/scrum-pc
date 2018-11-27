@@ -1,6 +1,5 @@
 const webpack = require('webpack');
 const merge = require('webpack-merge');
-const SWPrecachePlugin = require('sw-precache-webpack-plugin');
 const VueSSRClientPlugin = require('vue-server-renderer/client-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const base = require('./webpack.base.config');
@@ -40,24 +39,5 @@ const config = merge(base, {
         new VueSSRClientPlugin(),
     ],
 });
-
-// if (process.env.NODE_ENV === 'production') {
-//     config.plugins.concat([
-//         // auto generate service worker
-//         new SWPrecachePlugin({
-//             cacheId: 'vue-hn',
-//             filename: 'service-worker.js',
-//             minify: true,
-//             dontCacheBustUrlsMatching: /./,
-//             staticFileGlobsIgnorePatterns: [/\.map$/, /\.json$/],
-//             runtimeCaching: [
-//                 {
-//                     urlPattern: '/',
-//                     handler: 'networkFirst',
-//                 },
-//             ],
-//         }),
-//     ]);
-// }
 
 module.exports = config;
