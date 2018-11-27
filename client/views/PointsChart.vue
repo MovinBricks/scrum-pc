@@ -93,6 +93,7 @@
 
 <script>
 const echarts = require("../utils/echarts.min.js");
+const { serverHost } = require("../common/config.js");
 /* const userData = [
     {
         id: 1,
@@ -180,7 +181,7 @@ export default {
   },
   methods: {
     openWebsock() {
-      this.websock = new WebSocket("wss://mtools.vip");
+      this.websock = new WebSocket(serverHost);
       const Request = GetRequest();
       this.websock.onopen = () => {
         let webObj = { type: "CREATE" };
@@ -237,14 +238,17 @@ export default {
       };
 
       this.websock.onclose = () => {
-        console.log("onclose...");
+        this.websock = new WebSocket(serverHost);
       };
     },
 
     restartAction() {
       this.websock.send(JSON.stringify({ type: "RESTART" }));
     },
-    killAllAction() {},
+    killAllAction() {
+      const uids = this.userData.map(user => user.userInfo.uid);
+      this.websock.send(JSON.stringify({ type: "KICK", kickedUids: uids }));
+    },
     killUserAction(uid) {
       this.websock.send(JSON.stringify({ type: "KICK", kickedUids: [uid] }));
     },
@@ -253,8 +257,6 @@ export default {
     },
     createEcharts() {
       let yMax = 0;
-      let suggest = 5;
-
       console.log(this.userData, "this.userData");
       const names = this.userData.map(d => d.userInfo.nickName);
       const values = this.userData.map(d => d.score);
@@ -318,14 +320,17 @@ export default {
           {
             data: values,
             type: "bar",
-            markLine: {
-              data: [
-                {
-                  name: "推荐值",
-                  yAxis: this.average
-                }
-              ]
-            },
+            markLine:
+              this.average > 0
+                ? {
+                    data: [
+                      {
+                        name: "推荐值",
+                        yAxis: this.average
+                      }
+                    ]
+                  }
+                : null,
             itemStyle: {
               normal: {
                 color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
