@@ -50,6 +50,11 @@
     content: $icon-gouxuan; 
   }
 }
+.icon-close {
+  &:before {
+    content: $icon-close; 
+  }
+}
 .icon-shuzi6 {
   &:before {
     content: $icon-shuzi6; 
