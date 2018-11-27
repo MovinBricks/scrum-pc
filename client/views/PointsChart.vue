@@ -162,7 +162,7 @@ export default {
                 }
 
                 if (received_msg.type === "JOIN_USER") {
-                    //this.userData.push(received_msg.userInfo);
+                    this.userData = received_msg.users;
                 }
                 if (received_msg.type === "JOIN_USER") {
                 }
@@ -408,7 +408,7 @@ export default {
     height: 100%;
     position: absolute;
     top: 0;
-    background-color: rgba($color: #000000, $alpha: 0.6);
+    background-color: rgba($color: #000000, $alpha: 0.4);
 }
 .loading-svg {
     width: 100%;
@@ -443,8 +443,8 @@ export default {
     font-size: 20px;
     position: absolute;
     z-index: 2;
-    right: 0px;
-    bottom: -5px;
+    right: -2px;
+    bottom: -3px;
     color: #4b88e5;
 }
 </style>
