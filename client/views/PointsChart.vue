@@ -180,7 +180,7 @@ export default {
   },
   methods: {
     openWebsock() {
-      this.websock = new WebSocket("wss://mtools.vip");
+      this.websock = new WebSocket("wss://mtools.vip/websocket");
       const Request = GetRequest();
       this.websock.onopen = () => {
         let webObj = { type: "CREATE" };
