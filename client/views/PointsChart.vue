@@ -19,7 +19,7 @@
             <!--创建一个echarts的容器-->
             <div id="echartContainer" class="echartContainer"></div>
             <div class="userBox">
-                <div class="userItem" v-for="item in userData" :key="item.id">
+                <div class="userItem" v-for="item in userData" :key="item.uid">
                     <div class="userPhoto">
 
                         <div class="userPhotoImgWrap">
@@ -40,15 +40,21 @@
                 </div>
             </div>
             <div class="placeholder">
-
+                <div class="loadingBox">
+                    <div class="thing"></div>
+                    <div class="thing"></div>
+                    <div class="thing"></div>
+                    <div class="thing"></div>
+                </div>
             </div>
+
         </div>
     </div>
 </template>
 
 <script>
 const echarts = require("../utils/echarts.min.js");
-const userData = [
+/* const userData = [
     {
         id: 1,
         value: 5,
@@ -105,7 +111,7 @@ const userData = [
         name: "海岸",
         photo: "https://pages.c-ctrip.com/hotel_h5/agility/photo_4.jpg"
     }
-];
+]; */
 function GetRequest() {
     let url = location.search; //获取url中"?"符后的字串
     let theRequest = new Object();
@@ -122,7 +128,7 @@ function GetRequest() {
 export default {
     data() {
         return {
-            userData: userData,
+            userData: [],
             roomid: 0
         };
     },
@@ -162,7 +168,12 @@ export default {
                 }
 
                 if (received_msg.type === "JOIN_USER") {
-                    this.userData = received_msg.users;
+                    this.userData = received_msg.users.map(user => {
+                        return {
+                            name: user.nickName,
+                            photo: user.avatarUrl
+                        };
+                    });
                 }
                 if (received_msg.type === "JOIN_USER") {
                 }
@@ -181,14 +192,15 @@ export default {
             let yMax = 0;
             let suggest = 5;
 
-            const names = userData.map(d => d.name);
-            const values = userData.map(d => d.value);
+            console.log(this.userData, "this.userData");
+            const names = this.userData.map(d => d.nickName);
+            const values = this.userData.map(d => d.gender);
             for (var i = 0; i < values.length; i++) {
                 if (yMax < values[i]) {
                     yMax = values[i];
                 }
             }
-            const dataShadow = userData.map(d => yMax);
+            const dataShadow = this.userData.map(d => yMax);
 
             const option = {
                 title: {
@@ -382,15 +394,7 @@ export default {
     position: relative;
     z-index: 2;
 }
-.placeholder {
-    width: 900px;
-    height: 420px;
-    left: 70px;
-    top: 40px;
-    position: absolute;
-    background-color: rgba($color: #fff, $alpha: 0.8);
-    z-index: 1;
-}
+
 .userBox {
     width: 840px;
     margin: 0 auto;
@@ -446,5 +450,73 @@ export default {
     right: -2px;
     bottom: -3px;
     color: #4b88e5;
+}
+
+$size: 50px;
+.placeholder {
+    width: 900px;
+    height: 420px;
+    left: 70px;
+    top: 40px;
+    position: absolute;
+    background-color: rgba($color: #fff, $alpha: 0.3);
+    z-index: 1;
+}
+.loadingBox {
+    height: #{$size * 2};
+    width: #{$size * 2};
+    position: absolute;
+    top: calc(50% - #{$size / 2});
+    left: calc(50% - #{$size / 2});
+    perspective: 1000px;
+}
+
+.thing {
+    height: $size;
+    width: $size;
+    background-color: #e87722;
+    position: absolute;
+    box-sizing: border-box;
+    top: 0;
+    left: 0;
+}
+
+@for $i from 1 through 4 {
+    .thing:nth-of-type(#{$i}) {
+        animation: bounce 0.5s ease-in-out infinite alternate,
+            move 4s #{-$i}s infinite;
+    }
+}
+
+@keyframes bounce {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(0.8);
+    }
+}
+
+@keyframes move {
+    0% {
+        top: 0;
+        left: 0;
+        background-color: #e87722;
+    }
+    25% {
+        top: 0;
+        left: 50%;
+        background-color: #a4d65e;
+    }
+    50% {
+        top: 50%;
+        left: 50%;
+        background-color: #69b3e7;
+    }
+    75% {
+        top: 50%;
+        left: 0;
+        background-color: #ffc845;
+    }
 }
 </style>
