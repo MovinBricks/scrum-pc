@@ -240,7 +240,7 @@
                             }
                         }
                     },
-                    series: [{
+                    series: [/* {
                             // For shadow
                             type: "bar",
                             itemStyle: {
@@ -252,7 +252,7 @@
                             barCategoryGap: "40%",
                             data: dataShadow,
                             animation: false
-                        },
+                        }, */
                         {
                             data: values,
                             type: "bar",
