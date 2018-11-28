@@ -9,9 +9,9 @@
                     <span style="padding-left:10px;">ID：{{roomid}}</span>
                 </h1>
                 <nav class="nav">
-                    <a href="#" @click="showPointsAction" class="nav_item">Show Points</a>
-                    <a href="#" @click="restartAction" class="nav_item">Restart</a>
-                    <a href="#" @click="killAllAction" class="nav_item">Kill All</a>
+                    <span @click="showPointsAction" class="nav_item">Show Points</span>
+                    <span @click="restartAction" class="nav_item">Restart</span>
+                    <span @click="killAllAction" class="nav_item">Kill All</span>
                 </nav>
             </div>
         </header>
@@ -37,11 +37,11 @@
             </div>
             <div class="placeholder">
                 <!-- <div v-show="isShowLoading" class="loadingBox">
-                                            <div class="thing"></div>
-                                            <div class="thing"></div>
-                                            <div class="thing"></div>
-                                            <div class="thing"></div>
-                                        </div> -->
+                                                            <div class="thing"></div>
+                                                            <div class="thing"></div>
+                                                            <div class="thing"></div>
+                                                            <div class="thing"></div>
+            </div>-->
                 <Loading v-show="isShowLoading" class="loading-box" />
             </div>
         </div>
@@ -50,8 +50,10 @@
 
 <script>
     import Loading from "../components/Loading.vue";
+    //const echarts = require('echarts');
     const echarts = require("echarts/lib/echarts");
     require("echarts/lib/chart/bar");
+    require("echarts/lib/component/markLine");
     const {
         serverHost
     } = require("../common/config.js");
@@ -138,15 +140,15 @@
                     }
     
                     if (received_msg.type === "KICK" && received_msg.status === "SUCCESS") {
-                        if (received_msg.average) {
-                            this.average = received_msg.average;
-                        }
                         this.isShowLoading = true;
                         this.createEcharts();
                     }
     
                     if (received_msg.type === "SHOW" && received_msg.status === "SUCCESS") {
                         this.isShowLoading = false;
+                        if (received_msg.average) {
+                            this.average = received_msg.average;
+                        }
                         this.createEcharts();
                     }
     
@@ -254,12 +256,15 @@
                         {
                             data: values,
                             type: "bar",
-                            markLine: this.average > 0 ? {
-                                data: [{
-                                    name: "推荐值",
-                                    yAxis: this.average
-                                }]
-                            } : null,
+                            markLine: this.average > 0 ?
+                                {
+                                    data: [{
+                                        type: "average",
+                                        name: "推荐值",
+                                        yAxis: this.average
+                                    }]
+                                } :
+                                null,
                             itemStyle: {
                                 normal: {
                                     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
@@ -383,20 +388,44 @@
         display: inline-block;
         text-align: left;
         font-size: 17px;
-        transition: all 0.15s ease;
-        -webkit-transition: all 0.15s ease;
-        -moz-transition: all 0.15s ease;
         text-decoration: none;
         line-height: 2;
         padding: 5px 20px;
         cursor: pointer;
         font-weight: 400;
+        position: relative;
         color: white;
+        -webkit-transform: perspective(1px) translateZ(0);
+        transform: perspective(1px) translateZ(0);
+        transition-duration: 0.3s;
     }
     
-    .nav_item:hover {
-        background-color: #2c4f94;
+    .nav_item:before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #3866AB;
+        -webkit-transform: scaleX(0);
+        transform: scaleX(0);
+        -webkit-transform-origin: 50%;
+        transform-origin: 50%;
+        -webkit-transition-property: transform;
+        transition-property: transform;
+        -webkit-transition-duration: 0.3s;
+        transition-duration: 0.3s;
+        -webkit-transition-timing-function: ease-out;
+        transition-timing-function: ease-out;
     }
+    
+    .nav_item:hover:before {
+        -webkit-transform: scaleX(1);
+        transform: scaleX(1);
+    }
+
     
     .echartContainer {
         width: 1040px;
@@ -459,7 +488,7 @@
     }
     
     .userPhotoImgWrap:before {
-        background-color:rgba(0, 0, 0, 0);
+        background-color: rgba(0, 0, 0, 0);
         border-radius: 50%;
         height: 0;
         display: flex;
@@ -474,14 +503,13 @@
         z-index: 4;
         align-items: center;
         justify-content: center;
-    
     }
     
     .userPhotoImgWrap:hover:before {
-        background-color:rgba(0, 0, 0, 0.8);
+        background-color: rgba(0, 0, 0, 0.8);
         width: 120%;
         margin: -60%;
-        opacity:1;
+        opacity: 1;
         height: 120%;
     }
     
