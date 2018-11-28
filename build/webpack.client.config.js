@@ -1,7 +1,6 @@
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const VueSSRClientPlugin = require('vue-server-renderer/client-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const base = require('./webpack.base.config');
 
 const config = merge(base, {
@@ -27,9 +26,6 @@ const config = merge(base, {
                     && !/\.(css|scss)$/.test(module.request)
                 );
             },
-        }),
-        new HtmlWebpackPlugin({
-            favicon: './client/assets/favicon.ico'
         }),
         // extract webpack runtime & manifest to avoid vendor chunk hash changing
         // on every build.
