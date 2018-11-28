@@ -54,6 +54,7 @@
         "eslint-plugin-import": "^2.14.0",
         "file-loader": "^1.1.5",
         "friendly-errors-webpack-plugin": "^1.7.0",
+        "happypack": "4.0.1",
         "mocha": "^3.5.3",
         "node-sass": "^4.10.0",
         "nyc": "^11.4.1",

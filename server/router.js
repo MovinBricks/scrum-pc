@@ -27,7 +27,7 @@ module.exports = (koaApp, vd = '/') => {
             ctx.body = 'waiting for compilation.. refresh in a moment.';
             return;
         }
-        const context = { title: '携程旅行', url: ctx.url };
+        const context = { title: '敏捷拓展集', url: ctx.url };
 
         return new Promise(((resolve, reject) => {
             renderer.renderToString(
