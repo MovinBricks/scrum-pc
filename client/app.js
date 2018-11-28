@@ -7,7 +7,6 @@ import titleMixin from './utils/title';
 import * as filters from './utils/filters';
 import './styles/index.scss';
 import FontIcon from './components/FontIcon';
-//import WebSocket from "vue-websocket";
 
 // global inspect font-icon
 Vue.component('FontIcon', FontIcon);

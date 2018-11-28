@@ -7,7 +7,7 @@ const base = require('./webpack.base.config');
 const config = merge(base, {
     entry: {
         app: './client/entry-client.js',
-        // vendor: ['vue', 'vue-router', 'vuex', 'vue-router-sync', 'axios']
+        vendor: ['vue', 'vue-router', 'vuex', 'vuex-router-sync']
     },
     plugins: [
         // strip dev-only code in Vue source
