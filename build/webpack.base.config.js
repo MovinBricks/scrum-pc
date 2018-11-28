@@ -5,6 +5,7 @@ const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 
 const { VueLoaderPlugin } = require('vue-loader');
@@ -110,6 +111,11 @@ module.exports = {
             new webpack.optimize.UglifyJsPlugin({
                 compress: { warnings: false },
             }),
+            new CopyWebpackPlugin([{
+                from: path.resolve(__dirname, '../client/assets'),
+                to: 'assets',
+                cache: true,
+            }]),
             new webpack.optimize.ModuleConcatenationPlugin(),
         ]
         : [
