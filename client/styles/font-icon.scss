@@ -55,6 +55,11 @@
     content: $icon-close; 
   }
 }
+.icon-remove {
+  &:before {
+    content: $icon-remove; 
+  }
+}
 .icon-shuzi6 {
   &:before {
     content: $icon-shuzi6; 

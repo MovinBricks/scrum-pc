@@ -21,7 +21,7 @@
             <div class="userBox">
                 <div class="userItem" v-for="item in userData" :key="item.userInfo.uid">
                     <div class="userPhoto">
-                        <div class="userPhotoImgWrap" @click="killUserAction(item.userInfo.uid)">
+                        <div class="userPhotoImgWrap icon-close" @click="killUserAction(item.userInfo.uid)">
                             <div class="blackShade" v-show="!item.score">
                                 <img src="../utils/svg-loaders/puff.svg" class="loading-svg" alt>
                             </div>
@@ -37,11 +37,11 @@
             </div>
             <div class="placeholder">
                 <!-- <div v-show="isShowLoading" class="loadingBox">
-                        <div class="thing"></div>
-                        <div class="thing"></div>
-                        <div class="thing"></div>
-                        <div class="thing"></div>
-                    </div> -->
+                                            <div class="thing"></div>
+                                            <div class="thing"></div>
+                                            <div class="thing"></div>
+                                            <div class="thing"></div>
+                                        </div> -->
                 <Loading v-show="isShowLoading" class="loading-box" />
             </div>
         </div>
@@ -191,9 +191,8 @@
             },
             createEcharts() {
                 let yMax = 0;
-                console.log(this.userData, "this.userData");
                 const names = this.userData.map(d => d.userInfo.nickName);
-                const values = this.userData.map(d => d.score);
+                const values = this.userData.map(d => d.score || 0);
                 for (var i = 0; i < values.length; i++) {
                     if (yMax < values[i]) {
                         yMax = values[i];
@@ -443,17 +442,47 @@
     }
     
     .userPhotoImgWrap {
+        transition: all 1s;
+        cursor: pointer;
         position: relative;
         border: 3px solid #ccdeed;
         border-radius: 50%;
         //overflow: hidden;
     }
     
-    .userPhotoImg {
+    .userPhotoImgWrap .userPhotoImg {
+        transition: all 0.5s;
         width: 100%;
         border-radius: 50%;
         position: relative;
         display: block;
+    }
+    
+    .userPhotoImgWrap:before {
+        background-color:rgba(0, 0, 0, 0);
+        border-radius: 50%;
+        height: 0;
+        display: flex;
+        font-size: 26px;
+        margin: 0;
+        width: 0;
+        opacity: 0;
+        left: 50%;
+        top: 50%;
+        position: absolute;
+        transition: all 0.5s;
+        z-index: 4;
+        align-items: center;
+        justify-content: center;
+    
+    }
+    
+    .userPhotoImgWrap:hover:before {
+        background-color:rgba(0, 0, 0, 0.8);
+        width: 120%;
+        margin: -60%;
+        opacity:1;
+        height: 120%;
     }
     
     .userItemName {
@@ -494,5 +523,4 @@
         left: 50%;
         transform: translate(-50%, -50%);
     }
-    
 </style>
