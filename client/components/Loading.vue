@@ -21,7 +21,7 @@
                 classBox: "loader--flipDelay loader--3d"
             }
         },
-        methods() {
+        mounted() {
             switch (this.type) {
                 case 1:
                     this.classBox = "loader--flipDelayDown loader--3d";
