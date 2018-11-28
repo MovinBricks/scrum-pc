@@ -1,5 +1,5 @@
 <template>
-    <div class="loader loader--flipDelay loader--3d">
+    <div class="loader" :class="classBox">
         <span class="loader-item loader-item1">1</span>
         <span class="loader-item loader-item2">2</span>
         <span class="loader-item loader-item3">3</span>
@@ -8,6 +8,49 @@
         <span class="loader-item loader-item6">6</span>
     </div>
 </template>
+
+<script>
+    export default {
+        props: {
+            type: {
+                type: Number,
+            }
+        },
+        data() {
+            return {
+                classBox: "loader--flipDelay loader--3d"
+            }
+        },
+        methods() {
+            switch (this.type) {
+                case 1:
+                    this.classBox = "loader--flipDelayDown loader--3d";
+                    break;
+                case 2:
+                    this.classBox = "loader--slowFlip";
+                    break;
+                case 3:
+                    this.classBox = "loader--slowFlip loader--3d";
+                    break;
+                case 4:
+                    this.classBox = "loader--flipHoz loader--3d";
+                    break;
+                case 5:
+                    this.classBox = "loader--slideDown";
+                    break;
+                case 6:
+                    this.classBox = "loader--slideUp";
+                    break;
+                case 7:
+                    this.classBox = "loader--slideBoth";
+                    break;
+                default:
+                    this.classBox = "loader--flipDelay loader--3d";
+    
+            }
+        }
+    }
+</script>
 
 <style lang="scss" scoped>
     .loader {
@@ -39,27 +82,27 @@
     }
     
     .loader-item1 {
-        background-color:rgba($color: #4B88E5, $alpha: 0.8);
+        background-color: rgba($color: #4B88E5, $alpha: 0.8);
     }
     
     .loader-item2 {
-        background-color:rgba($color: #4B88E5, $alpha: 0.8);
+        background-color: rgba($color: #4B88E5, $alpha: 0.8);
     }
     
     .loader-item3 {
-        background-color:rgba($color: #4B88E5, $alpha: 0.8);
+        background-color: rgba($color: #4B88E5, $alpha: 0.8);
     }
     
     .loader-item4 {
-        background-color:rgba($color: #4B88E5, $alpha: 0.8);
+        background-color: rgba($color: #4B88E5, $alpha: 0.8);
     }
     
     .loader-item5 {
-        background-color:rgba($color: #4B88E5, $alpha: 0.8);
+        background-color: rgba($color: #4B88E5, $alpha: 0.8);
     }
     
     .loader-item6 {
-        background-color:rgba($color: #4B88E5, $alpha: 0.8);
+        background-color: rgba($color: #4B88E5, $alpha: 0.8);
     }
     
     .loader-item:nth-child(1) {

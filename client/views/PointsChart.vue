@@ -49,7 +49,7 @@
 </template>
 
 <script>
-    import Loading from "./Loading.vue";
+    import Loading from "../components/Loading.vue";
     const echarts = require("echarts/lib/echarts");
     require("echarts/lib/chart/bar");
     const {
@@ -495,61 +495,4 @@
         transform: translate(-50%, -50%);
     }
     
-    .loadingBox {
-        height: #{$size * 2};
-        width: #{$size * 2};
-        position: absolute;
-        top: calc(50% - #{$size / 2});
-        left: calc(50% - #{$size / 2});
-        perspective: 1000px;
-    }
-    
-    .thing {
-        height: $size;
-        width: $size;
-        background-color: #e87722;
-        position: absolute;
-        box-sizing: border-box;
-        top: 0;
-        left: 0;
-    }
-    
-    @for $i from 1 through 4 {
-        .thing:nth-of-type(#{$i}) {
-            animation: bounce 0.5s ease-in-out infinite alternate,
-            move 4s #{-$i}s infinite;
-        }
-    }
-    
-    @keyframes bounce {
-        from {
-            transform: scale(1);
-        }
-        to {
-            transform: scale(0.8);
-        }
-    }
-    
-    @keyframes move {
-        0% {
-            top: 0;
-            left: 0;
-            background-color: #e87722;
-        }
-        25% {
-            top: 0;
-            left: 50%;
-            background-color: #a4d65e;
-        }
-        50% {
-            top: 50%;
-            left: 50%;
-            background-color: #69b3e7;
-        }
-        75% {
-            top: 50%;
-            left: 0;
-            background-color: #ffc845;
-        }
-    }
 </style>
