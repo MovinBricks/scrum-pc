@@ -129,7 +129,11 @@
                     ) {
                         this.userData = received_msg.users;
                     }
-    
+
+                    if(received_msg.type === "JOIN_USER" && !this.isShowLoading){
+                        this.createEcharts();
+                    }
+
                     if (
                         received_msg.type === "RESTART" &&
                         received_msg.status === "SUCCESS"
