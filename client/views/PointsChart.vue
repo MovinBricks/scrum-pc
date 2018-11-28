@@ -141,7 +141,7 @@
     
                     if (received_msg.type === "KICK" && received_msg.status === "SUCCESS") {
                         this.isShowLoading = true;
-                        this.createEcharts();
+                        this.myChart.clear();
                     }
     
                     if (received_msg.type === "SHOW" && received_msg.status === "SUCCESS") {
