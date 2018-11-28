@@ -2,16 +2,18 @@ require('./check-versions')();
 
 const path = require('path');
 const webpack = require('webpack');
-const autoprefixer = require('autoprefixer');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-
-
 const { VueLoaderPlugin } = require('vue-loader');
+
+const happypackConfig = require('./happypack.conf');
+const vueLoaderConfig = require('./vue-loader.conf');
+
 const resolve = file => path.resolve(__dirname, file);
 
 const isProd = process.env.NODE_ENV === 'production';
+
 
 // TODO:打包结构未整理，待重写，做拆包
 module.exports = {
@@ -19,13 +21,13 @@ module.exports = {
         ? false
         : '#cheap-module-source-map',
     output: {
-        path: path.resolve(__dirname, '../dist'),
+        path: resolve('../dist'),
         publicPath: '/dist/',
         filename: '[name].[chunkhash].js',
     },
     resolve: {
-        modules: [path.resolve(__dirname, 'client'), 'node_modules'],
-        extensions: ['.js', '.vue'],
+        modules: [resolve('client'), 'node_modules'],
+        extensions: ['.js', '.vue',],
     },
     module: {
         noParse: /es6-promise\.js$/, // avoid webpack shimming process
@@ -33,40 +35,12 @@ module.exports = {
             {
                 test: /\.vue$/,
                 loader: 'vue-loader',
-                options: {
-                    loaders: {
-                        scss: ExtractTextPlugin.extract({
-                            fallback: 'vue-style-loader',
-                            use: [
-                                {
-                                    loader: 'css-loader',
-                                    options: { minimize: true },
-                                },
-                                {
-                                    loader: 'postcss-loader?sourceMap',
-                                    options: {
-                                        plugins: () => [autoprefixer({
-                                            browsers: ['last 2 versions']
-                                        })]
-                                    }
-                                },
-                                'sass-loader'
-                            ]
-                        }),
-                    },
-                    compilerOptions: {
-                        preserveWhitespace: false,
-                    },
-                    cssModules: {
-                        localIdentName: '[path][name]---[local]---[hash:base64:5]',
-                        camelCase: true
-                    },
-                    extractCSS: true
-                },
+                // loader: 'happypack/loader?id=vue-loader',
+                options: vueLoaderConfig,
             },
             {
                 test: /\.js$/,
-                loader: 'babel-loader',
+                loader: 'happypack/loader?id=js-loader',
                 exclude: /node_modules/,
             },
             {
@@ -105,23 +79,24 @@ module.exports = {
         maxEntrypointSize: 300000,
         hints: isProd ? 'warning' : false,
     },
-    plugins: (isProd
-        ? [
+    plugins: (happypackConfig)
+        .concat(isProd
+            ? [
+                new CopyWebpackPlugin([{
+                    from: resolve('../client/assets'),
+                    to: 'assets',
+                    cache: true,
+                }]),
+                new webpack.optimize.UglifyJsPlugin({
+                    compress: { warnings: false },
+                }),
+                new webpack.optimize.ModuleConcatenationPlugin(),
+            ]
+            : [
+                new FriendlyErrorsPlugin(),
+            ])
+        .concat([
             new VueLoaderPlugin(),
-            new webpack.optimize.UglifyJsPlugin({
-                compress: { warnings: false },
-            }),
-            new CopyWebpackPlugin([{
-                from: path.resolve(__dirname, '../client/assets'),
-                to: 'assets',
-                cache: true,
-            }]),
-            new webpack.optimize.ModuleConcatenationPlugin(),
-        ]
-        : [
-            new VueLoaderPlugin(),
-            new FriendlyErrorsPlugin(),
-        ]).concat([
             new ExtractTextPlugin('style-[contenthash:8].css'),
         ]),
 };
