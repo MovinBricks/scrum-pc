@@ -37,11 +37,11 @@
             </div>
             <div class="placeholder">
                 <!-- <div v-show="isShowLoading" class="loadingBox">
-                                                            <div class="thing"></div>
-                                                            <div class="thing"></div>
-                                                            <div class="thing"></div>
-                                                            <div class="thing"></div>
-            </div>-->
+                                                                <div class="thing"></div>
+                                                                <div class="thing"></div>
+                                                                <div class="thing"></div>
+                                                                <div class="thing"></div>
+                </div>-->
                 <Loading v-show="isShowLoading" class="loading-box" />
             </div>
         </div>
@@ -50,13 +50,12 @@
 
 <script>
     import Loading from "../components/Loading.vue";
+    import serverHost from '../common/config.js';
+    
     //const echarts = require('echarts');
     const echarts = require("echarts/lib/echarts");
     require("echarts/lib/chart/bar");
     require("echarts/lib/component/markLine");
-    const {
-        serverHost
-    } = require("../common/config.js");
     
     function GetRequest() {
         let url = location.search; //获取url中"?"符后的字串
@@ -129,11 +128,11 @@
                     ) {
                         this.userData = received_msg.users;
                     }
-
-                    if(received_msg.type === "JOIN_USER" && !this.isShowLoading){
+    
+                    if (received_msg.type === "JOIN_USER" && !this.isShowLoading) {
                         this.createEcharts();
                     }
-
+    
                     if (
                         received_msg.type === "RESTART" &&
                         received_msg.status === "SUCCESS"
@@ -244,31 +243,30 @@
                             }
                         }
                     },
-                    series: [/* {
-                            // For shadow
-                            type: "bar",
-                            itemStyle: {
-                                normal: {
-                                    color: "rgba(0,0,0,0.05)"
-                                }
-                            },
-                            barGap: "-100%",
-                            barCategoryGap: "40%",
-                            data: dataShadow,
-                            animation: false
-                        }, */
+                    series: [
+                        /* {
+                                                    // For shadow
+                                                    type: "bar",
+                                                    itemStyle: {
+                                                        normal: {
+                                                            color: "rgba(0,0,0,0.05)"
+                                                        }
+                                                    },
+                                                    barGap: "-100%",
+                                                    barCategoryGap: "40%",
+                                                    data: dataShadow,
+                                                    animation: false
+                                                }, */
                         {
                             data: values,
                             type: "bar",
-                            markLine: this.average > 0 ?
-                                {
-                                    data: [{
-                                        type: "average",
-                                        name: "推荐值",
-                                        yAxis: this.average
-                                    }]
-                                } :
-                                null,
+                            markLine: this.average > 0 ? {
+                                data: [{
+                                    type: "average",
+                                    name: "推荐值",
+                                    yAxis: this.average
+                                }]
+                            } : null,
                             itemStyle: {
                                 normal: {
                                     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
@@ -429,7 +427,6 @@
         -webkit-transform: scaleX(1);
         transform: scaleX(1);
     }
-
     
     .echartContainer {
         width: 1040px;
