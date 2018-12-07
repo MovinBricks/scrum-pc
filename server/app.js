@@ -1,5 +1,6 @@
 const fs = require('fs');
 const Koa = require('koa');
+const chalk = require('chalk');
 const helmet = require('koa-helmet');
 const path = require('path');
 const bodyParser = require('koa-bodyparser');
@@ -90,7 +91,11 @@ Ignitor.exec(_SERVICE_IGNITE_STATUS_, _SERVICE_NODEJS_SITE_).then(() => {
     router(app, vd);
 
     app.listen(port, () => {
-        console.log('application started prot:', port);
+        if(!isProd){
+            console.log('')
+            console.log(chalk.green('application started prot: ')+ chalk.yellowBright(port));
+            console.log('')
+        }
     });
 });
 
